@@ -7,7 +7,10 @@ import org.springframework.stereotype.Component;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import br.com.erickmarques.enumeration.EmailStatus;
 import br.com.erickmarques.representation.Email;
+import br.com.erickmarques.representation.EmailStatusDTO;
+import br.com.erickmarques.service.EmailClient;
 import br.com.erickmarques.service.EmailService;
 import jakarta.mail.MessagingException;
 import lombok.extern.slf4j.Slf4j;
@@ -18,20 +21,28 @@ public class EmailConsumer {
 
 	@Autowired
 	EmailService service;
+
+    @Autowired
+    EmailClient client;
     
     @RabbitListener(queues = "${mq.queues.sender-email}")
     public void senderEmail(@Payload String payload){
-    	
-    	System.out.println(payload);
         
-        try {
-            service.enviarEmail(toEmailObject(payload));
+        Email email         = null;
+        EmailStatusDTO dto  = new EmailStatusDTO();
 
-        } catch (JsonProcessingException e){
-            log.error("Erro ao converter payload para objeto email: {} ", e.getMessage());
-        } catch (MessagingException e){
-        	log.error("Erro no MessagingException: {} ", e.getMessage());
+        try {
+            email = toEmailObject(payload);
+            service.enviarEmail(email);
+            dto.setStatus(EmailStatus.SUCCESS);
+            client.setStatus(email.getId(), dto);
+
         } catch (Exception e){
+            if (email != null) {
+                dto.setStatus(EmailStatus.ERROR);
+                client.setStatus(email.getId(), dto);
+            }
+
         	log.error("Erro ao enviar email: {} ", e.getMessage());
         }
     }

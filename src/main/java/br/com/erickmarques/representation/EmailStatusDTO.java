@@ -6,13 +6,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
-public class Email {
-	private Long id;
-	private String to;
-	private String from;
-	private String subject;
-	private String body;
-	private EmailStatus status;
+@AllArgsConstructor
+public class EmailStatusDTO {
+    private EmailStatus status;
 }
