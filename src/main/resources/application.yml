@@ -1,0 +1,30 @@
+server:
+  port: 8081  
+spring:
+  application:
+    name: "java-email-consumer"
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: guest
+    password: guest  
+  mail:
+    host: email-smtp.us-east-1.amazonaws.com
+    port: 587
+    username: USERNAME
+    password: PASSWORD
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+          connectiontimeout: 5000
+          timeout: 3000
+          writetimeout: 5000  
+    
+#rabbitMQ config
+mq:
+  queues:
+    sender-email: sender-email
+
